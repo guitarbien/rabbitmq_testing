@@ -5,10 +5,10 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 $connection = new AMQPStreamConnection('my-rabbit', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('task_queue', 
-						false, 
+$channel->queue_declare('task_queue',
+						false,
 						true, // durable
-						false, 
+						false,
 						false);
 
 echo ' [*] Waiting for messages. To exit press CTRL+C', "\n";
@@ -22,14 +22,17 @@ $callback = function($msg) {
 
 // don't dispatch a new message to a worker until it has processed and acknowledged the previous one
 $channel->basic_qos(null, 1, null);
-$channel->basic_consume('task_queue', 
-						'', 
-						false, 
-						false, 
+$channel->basic_consume('task_queue',
+						'',
+						false,
+						false,
 						false, // false => when task done, ack back to MQ
-						false, 
+						false,
 						$callback);
 
 while(count($channel->callbacks)) {
     $channel->wait();
 }
+
+$channel->close();
+$connection->close();

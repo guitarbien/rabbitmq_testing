@@ -7,17 +7,17 @@ use PhpAmqpLib\Message\AMQPMessage;
 $connection = new AMQPStreamConnection('my-rabbit', 5672, 'guest', 'guest');
 $channel = $connection->channel();
 
-$channel->queue_declare('task_queue', 
-						false, 
+$channel->queue_declare('task_queue',
+						false,
 						true, // durable
-						false, 
+						false,
 						false);
 
 $data = implode(' ', array_slice($argv, 1));
-var_dump($data);
-if(empty($data)) 
+// var_dump($data);
+if(empty($data))
 {
-	$data = "Hello World!";	
+	$data = "Hello World!";
 }
 
 $msg = new AMQPMessage($data,
